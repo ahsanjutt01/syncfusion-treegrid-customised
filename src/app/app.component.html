@@ -4,24 +4,59 @@
   [columnMenuItems]="columnMenuItems" [allowSorting]="true" [allowExcelExport]="true" [editSettings]="editSettings"
   [allowPdfExport]="true" (columnMenuClick)="contextMenuOpen($event)"> -->
 
-<ejs-treegrid #treeGrid (actionComplete)="actionComplete($event)" (actionBegin)="actionBegin($event)" [dataSource]="data" childMapping="subTasks" [treeColumnIndex]="1" [height]="600"
-  enableCollapseAll="true" [enableInfiniteScrolling]="true" [pageSettings]="pageSettings" [allowResizing]="true"
-  [contextMenuItems]="contextMenuItems" [columnMenuItems]="columnMenuItems" [allowSorting]="true"
-  [allowExcelExport]="true" [editSettings]="editSettings" [allowPdfExport]="true"
-  (contextMenuClick)='contextMenuClick($event)' (contextMenuOpen)='contextMenuOpen($event)'>
-
+<ejs-treegrid
+  #treeGrid
+  (actionComplete)="actionComplete($event)"
+  (actionBegin)="actionBegin($event)"
+  [dataSource]="data"
+  childMapping="subTasks"
+  [treeColumnIndex]="1"
+  [height]="600"
+  enableCollapseAll="true"
+  [enableInfiniteScrolling]="true"
+  [pageSettings]="pageSettings"
+  [allowResizing]="true"
+  [contextMenuItems]="contextMenuItems"
+  [columnMenuItems]="columnMenuItems"
+  [allowSorting]="true"
+  [allowExcelExport]="true"
+  [editSettings]="editSettings"
+  [allowPdfExport]="true"
+  [allowFiltering]="true"
+  (contextMenuClick)="contextMenuClick($event)"
+  (contextMenuOpen)="contextMenuOpen($event)"
+>
   <e-columns>
-    <e-column field='{{ col.field }}' headerText='{{ col.headerText }}' *ngFor="let col of columns"></e-column>
+    <e-column
+      field="{{ col.field }}"
+      headerText="{{ col.headerText }}"
+      *ngFor="let col of columns"
+    >
+    </e-column>
   </e-columns>
-
 </ejs-treegrid>
 
-<ejs-dialog id="dialog" [visible]="false" #ejDialog showCloseIcon="true" isModal="true"
-  (overlayClick)="onOverlayClick()" [target]="targetElement" width="250px" header="{{ dialogHeader }}" [buttons]="buttons" *ngIf="columns.length">
+<ejs-dialog
+  id="dialog"
+  [visible]="false"
+  #ejDialog
+  showCloseIcon="true"
+  isModal="true"
+  (overlayClick)="onOverlayClick()"
+  [target]="targetElement"
+  width="250px"
+  header="{{ dialogHeader }}"
+  [buttons]="buttons"
+  *ngIf="columns.length"
+>
   <div [style.display]="showForm == 1 ? '' : 'none'">
     <div class="form-group">
       <div class="e-float-input e-control-wrapper">
-        <input name="headerText" type="text" [(ngModel)]="columnPropsModel.headerText" />
+        <input
+          name="headerText"
+          type="text"
+          [(ngModel)]="columnPropsModel.headerText"
+        />
         <label class="e-float-text e-label-top" for="headerText">
           Header Text
         </label>
@@ -30,8 +65,12 @@
     <div class="form-group">
       <div class="e-float-input e-control-wrapper">
         <!-- <input name="dataType" type="text" [(ngModel)]="columnPropsModel.dataType" /> -->
-        <select class="select" [(ngModel)]="columnPropsModel.dataType" id="dataType"
-          (change)="onChangeDataType()">
+        <select
+          class="select"
+          [(ngModel)]="columnPropsModel.dataType"
+          id="dataType"
+          (change)="onChangeDataType()"
+        >
           <option *ngFor="let type of dataTypes" [value]="type?.id">
             {{ type.value }}
           </option>
@@ -43,14 +82,19 @@
     </div>
     <div class="form-group" *ngIf="selectedDataType === 'dropdownList'">
       <div class="e-float-input e-control-wrapper">
-        <input name="minWidth" type="number" [(ngModel)]="listItemInput" [ngModelOptions]="{ standalone: true }" />
+        <input
+          name="minWidth"
+          type="number"
+          [(ngModel)]="listItemInput"
+          [ngModelOptions]="{ standalone: true }"
+        />
         <button type="button" (click)="onDropdownListItemAdd()">Add</button>
         <label class="e-float-text e-label-top" for="minWidth">
           Add Dropdown List Item
         </label>
       </div>
       <span *ngFor="let item of listItems; let index = index">
-        <p>{{ item.value }} www11</p>
+        <p>{{ item.value }}</p>
         <button type="button" (click)="onDropdownListItemRemove(index)">
           Remove
         </button>
@@ -58,7 +102,11 @@
     </div>
     <div class="form-group">
       <div class="e-float-input e-control-wrapper">
-        <input name="minWidth" type="text" [(ngModel)]="columnPropsModel.minWidth" />
+        <input
+          name="minWidth"
+          type="text"
+          [(ngModel)]="columnPropsModel.minWidth"
+        />
         <label class="e-float-text e-label-top" for="minWidth">
           Min Width
         </label>
@@ -66,7 +114,11 @@
     </div>
     <div class="form-group">
       <div class="e-float-input e-control-wrapper">
-        <input name="defaultValue" type="text" [(ngModel)]="columnPropsModel.defaultValue" />
+        <input
+          name="defaultValue"
+          type="text"
+          [(ngModel)]="columnPropsModel.defaultValue"
+        />
         <label class="e-float-text e-label-top" for="defaultValue">
           Default Value
         </label>
@@ -74,7 +126,11 @@
     </div>
     <div class="form-group">
       <div class="e-float-input e-control-wrapper">
-        <input name="fontSize" type="number" [(ngModel)]="columnPropsModel.fontSize" />
+        <input
+          name="fontSize"
+          type="number"
+          [(ngModel)]="columnPropsModel.fontSize"
+        />
         <label class="e-float-text e-label-top" for="fontSize">
           Font Size
         </label>
@@ -82,7 +138,11 @@
     </div>
     <div class="form-group">
       <div class="e-float-input e-control-wrapper">
-        <input name="fontColor" type="text" [(ngModel)]="columnPropsModel.fontColor" />
+        <input
+          name="fontColor"
+          type="text"
+          [(ngModel)]="columnPropsModel.fontColor"
+        />
         <label class="e-float-text e-label-top" for="fontColor">
           Font Color
         </label>
@@ -90,7 +150,11 @@
     </div>
     <div class="form-group">
       <div class="e-float-input e-control-wrapper">
-        <input name="backgroundColor" type="text" [(ngModel)]="columnPropsModel.backgroundColor" />
+        <input
+          name="backgroundColor"
+          type="text"
+          [(ngModel)]="columnPropsModel.backgroundColor"
+        />
         <label class="e-float-text e-label-top" for="backgroundColor">
           Background Color
         </label>
@@ -98,7 +162,11 @@
     </div>
     <div class="form-group">
       <div class="e-float-input e-control-wrapper">
-        <input name="Alignment" type="text" [(ngModel)]="columnPropsModel.Alignment" />
+        <input
+          name="Alignment"
+          type="text"
+          [(ngModel)]="columnPropsModel.Alignment"
+        />
         <label class="e-float-text e-label-top" for="Alignment">
           Alignment
         </label>
@@ -106,7 +174,11 @@
     </div>
     <div class="form-group">
       <div class="e-float-input e-control-wrapper">
-        <input name="textWrap" type="checkbox" [(ngModel)]="columnPropsModel.textWrap" />
+        <input
+          name="textWrap"
+          type="checkbox"
+          [(ngModel)]="columnPropsModel.textWrap"
+        />
         <label class="e-float-text e-label-top" for="textWrap">
           Text Wrap
         </label>
@@ -114,13 +186,32 @@
     </div>
   </div>
   <div [style.display]="showForm == 2 ? '' : 'none'">
-    <div class="form-group" *ngFor="let col of columns">
-      <div class="e-float-input e-control-wrapper">
-        <input *ngIf="col.field == 'rowId'" name="field" type="text" [value]="data.length+1" id="{{ col.field }}" readonly/>
-        <input *ngIf="col.field != 'rowId'" name="field" type="text" id="{{ col.field }}" [readonly]=" col.field == 'rowId' "/>
-        <label class="e-float-text e-label-top" for="field">{{ col.headerText }}</label>
+    <form name="form">
+      <div class="form-group" *ngFor="let col of columns">
+        <div class="e-float-input e-control-wrapper">
+          <input
+            *ngIf="col.field == 'rowId'"
+            name="field"
+            [(ngModel)]="rowForm[col.field]"
+            type="{{ col.dataType }}"
+            [value]="data.length + 1"
+            id="{{ col.field }}"
+            readonly
+          />
+          <input
+            *ngIf="col.field != 'rowId'"
+            name="field"
+            [(ngModel)]="rowForm[col.field]"
+            type="{{ col.dataType }}"
+            id="{{ col.field }}"
+            [readonly]="col.field == 'rowId'"
+          />
+          <label class="e-float-text e-label-top" for="field"
+            >{{ col.headerText }}</label
+          >
+        </div>
       </div>
-    </div>
+    </form>
   </div>
 </ejs-dialog>
 <!-- <ng-template #header>

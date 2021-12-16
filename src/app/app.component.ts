@@ -4,6 +4,8 @@ import { TreeGrid } from '@syncfusion/ej2-angular-treegrid';
 import { EmitType } from '@syncfusion/ej2-base';
 import { DialogComponent } from '@syncfusion/ej2-angular-popups';
 
+import { names } from '../datasource';
+
 import {
   BeforeOpenCloseMenuEventArgs,
   MenuEventArgs,
@@ -16,7 +18,9 @@ import {
 })
 export class AppComponent implements OnInit, AfterViewInit {
   form: FormGroup;
+  rowForm: any = {};
   selectedDataType: String;
+  public filterSettings: Object;
   listItemInput: string;
   listItems: any = [];
   dataTypes = [
@@ -42,28 +46,41 @@ export class AppComponent implements OnInit, AfterViewInit {
   public saveNew() {
     if (this.showForm == 1 && this.columnOp == 1) {
       this.columns.push(this.columnPropsModel);
-      debugger;
+      this.data.forEach(
+        (x) =>
+          (x[this.columnPropsModel.field] = this.columnPropsModel.defaultValue)
+      );
+      this.refreshRows(this.data);
     } else if (this.showForm == 1 && this.columnOp == 2) {
       // Save column which is being edited
+      this.updateColumn();
     } else if (this.showForm == 2 && this.rowOp == 1) {
-      // Insert a new row
-      this.data.push()
-      const newData = this.data;
-      this.data = [];
-      setTimeout(() => {
-        this.data = newData;
-      }, 300);
+      // Insert a new row1
+      this.rowForm.rowId = this.data.length + 1;
+      this.data.push(this.rowForm);
+      this.refreshRows(this.data);
     } else if (this.showForm == 2 && this.rowOp == 2) {
       // Edit current row
-      const rowIdx = this.data.findIndex(x => x.rowId == this.rowToEdit.rowId);
+      const rowIdx = this.data.findIndex(
+        (x) => x.rowId == this.rowToEdit.rowId
+      );
       this.data[rowIdx] = this.rowToEdit;
-      const newData = this.data;
-      this.data = [];
-      setTimeout(() => {
-        this.data = newData;
-      }, 300);
+      this.refreshRows(this.data);
     }
     this.hideDiaLog();
+  }
+
+  updateColumn() {
+      const index = this.columns.findIndex((col: any) => col.field === this.columnPropsModel.field);
+      this.columns[index] = {...this.columnPropsModel};
+      this.refreshRows(this.data);
+  }
+  refreshRows(data: any) {
+    const newData = [...data];
+    this.data = [];
+    setTimeout(() => {
+      this.data = newData;
+    }, 300);
   }
   public buttons: Object = [
     {
@@ -94,58 +111,56 @@ export class AppComponent implements OnInit, AfterViewInit {
   // Alignment: 'alignment at column level',
   // textWrap: true,
 
-  actionBegin(args: any) {
-  }
+  actionBegin(args: any) {}
 
   ngAfterViewInit(): void {
     this.columns = [
       {
         field: `rowId`,
         headerText: 'RowID',
-        primaryKey: true
-      }
+        primaryKey: true,
+      },
     ];
 
-    const names = ["Adam", "Alex", "Aaron", "Ben", "Carl", "Dan", "David", "Edward", "Fred", "Frank", "George", "Hal", "Hank", "Ike", "John", "Jack", "Joe", "Larry", "Monte", "Matthew", "Mark", "Nathan", "Otto", "Paul", "Peter", "Roger", "Roger", "Steve", "Thomas", "Tim", "Ty", "Victor", "Walter", "Anderson", "Ashwoon", "Aikin", "Bateman", "Bongard", "Bowers", "Boyd", "Cannon", "Cast", "Deitz", "Dewalt", "Ebner", "Frick", "Hancock", "Haworth", "Hesch", "Hoffman", "Kassing", "Knutson", "Lawless", "Lawicki", "Mccord", "McCormack", "Miller", "Myers", "Nugent", "Ortiz", "Orwig", "Ory", "Paiser", "Pak", "Pettigrew", "Quinn", "Quizoz", "Ramachandran", "Resnick", "Sagar", "Schickowski", "Schiebel", "Sellon", "Severson", "Shaffer", "Solberg", "Soloman", "Sonderling", "Soukup", "Soulis", "Stahl", "Sweeney", "Tandy", "Trebil", "Trusela", "Trussel", "Turco", "Uddin", "Uflan", "Ulrich", "Upson", "Vader", "Vail", "Valente", "Van Zandt", "Vanderpoel", "Ventotla", "Vogal", "Wagle", "Wagner", "Wakefield", "Weinstein", "Weiss", "Woo", "Yang", "Yates", "Yocum", "Zeaser", "Zeller", "Ziegler", "Bauer", "Baxster", "Casal", "Cataldi", "Caswell", "Celedon", "Chambers", "Chapman", "Christensen", "Darnell", "Davidson", "Davis", "DeLorenzo", "Dinkins", "Doran", "Dugelman", "Dugan", "Duffman", "Eastman", "Ferro", "Ferry", "Fletcher", "Fietzer", "Hylan", "Hydinger", "Illingsworth", "Ingram", "Irwin", "Jagtap", "Jenson", "Johnson", "Johnsen", "Jones", "Jurgenson", "Kalleg", "Kaskel", "Keller", "Leisinger", "LePage", "Lewis", "Linde", "Lulloff", "Maki", "Martin", "McGinnis", "Mills", "Moody", "Moore", "Napier", "Nelson", "Norquist", "Nuttle", "Olson", "Ostrander", "Reamer", "Reardon", "Reyes", "Rice", "Ripka", "Roberts", "Rogers", "Root", "Sandstrom", "Sawyer", "Schlicht", "Schmitt", "Schwager", "Schutz", "Schuster", "Tapia", "Thompson", "Tiernan", "Tisler"];
+   
 
     for (let rows = 0; rows < 10; rows++) {
       let colObj: any = {};
       colObj['rowId'] = rows + 1;
-      this.columns.filter((c: any) => c.field != 'rowId').map((x: any) => x.field).forEach((k: any, idx: any) => {
-        colObj[k] = names[Math.floor(Math.random() * 182) + 0]
-      });
-      this.data.push(colObj)
+      this.columns
+        .filter((c: any) => c.field != 'rowId')
+        .map((x: any) => x.field)
+        .forEach((k: any, idx: any) => {
+          colObj[k] = names[Math.floor(Math.random() * 182) + 0];
+        });
+      this.data.push(colObj);
     }
-
   }
 
   actionComplete(e: any) {
-    if (e.type !== 'save')
-      return;
-    const rowIdx = this.data.findIndex(x => x.rowId == e.data.rowId);
+    if (e.type !== 'save') return;
+    const rowIdx = this.data.findIndex((x) => x.rowId == e.data.rowId);
     const newChangedData: any = {};
     newChangedData.rowId = e.data.rowId;
-    Object.keys(e.data).filter(x => x.includes('field-')).forEach(x => {
-      newChangedData[x] = e.data[x]
-    });
+    Object.keys(e.data)
+      .filter((x) => x.includes('field-'))
+      .forEach((x) => {
+        newChangedData[x] = e.data[x];
+      });
     this.data[rowIdx] = newChangedData;
-    if (e.column.field == "rowId") {
-      if (this.data.filter(x => x.rowId == e.data.rowId).length > 1) {
+    if (e.column.field == 'rowId') {
+      if (this.data.filter((x) => x.rowId == e.data.rowId).length > 1) {
         newChangedData.rowId = e.previousData;
         for (let rows = 0; rows < this.treeGrid.getRows().length; rows++) {
           this.data[rows].rowId = rows + 1;
         }
       }
     }
-    const newData = this.data;
-    this.data = [];
 
-    setTimeout(() => {
-      this.data = newData;
-    }, 100);
+    this.refreshRows(this.data);
   }
 
-  constructor(private formBuilder: FormBuilder) { }
+  constructor(private formBuilder: FormBuilder) {}
   // The Dialog shows within the target element.
   @ViewChild('ejDialog') ejDialog: DialogComponent;
   // @ViewChild('container', { read: ElementRef }) container: ElementRef;
@@ -229,9 +244,12 @@ export class AppComponent implements OnInit, AfterViewInit {
     { text: 'Edit', target: '.e-headercontent', id: 'editCol' },
     { text: 'New', target: '.e-headercontent', id: 'newCol' },
     { text: 'Delete', target: '.e-headercontent', id: 'delCol' },
-    { text: 'Ahsan', target: '.e-headercontent', id: 'ahsan' },
+    { text: 'Choose Col', target: '.e-headercontent', id: 'chooseCol' },
+    { text: 'Freez Col', target: '.e-headercontent', id: 'freezCol' },
+    { text: 'Filter Col', target: '.e-headercontent', id: 'freezCol' },
+    { text: 'Multi Sort', target: '.e-headercontent', id: 'freezCol' },
     { text: 'Insert Row', target: '.e-content', id: 'insert-row' },
-    // { text: 'Edit Row', target: '.e-content', id: 'edit-row' },
+    { text: 'Edit Row', target: '.e-content', id: 'edit-row' },
   ];
 
   // load(args: any): void {
@@ -245,19 +263,20 @@ export class AppComponent implements OnInit, AfterViewInit {
   public columns: any = [];
 
   public columnPropsModel = {
-    field: "",
-    headerText: "",
-    dataType: "",
-    minWidth: "",
-    defaultValue: "",
-    fontSize: "",
-    fontColor: "",
-    backgroundColor: "",
-    Alignment: "",
-    textWrap: "",
+    field: '',
+    headerText: '',
+    dataType: '',
+    minWidth: '',
+    defaultValue: '',
+    fontSize: '',
+    fontColor: '',
+    backgroundColor: '',
+    Alignment: '',
+    textWrap: '',
   };
 
   ngOnInit(): void {
+    this.filterSettings = { type: 'FilterBar', hierarchyMode: 'Parent', mode: 'Immediate' };
     // setTimeout(() => {
     //   this.columns.push({
     //     field: 'age',
@@ -284,11 +303,10 @@ export class AppComponent implements OnInit, AfterViewInit {
     //   }, 1500);
     // }, 1500);
     // this.initilaizeTarget();
-
     // this.pageSettings = {pageSize: 30};
   }
 
-  dialogHeader = "";
+  dialogHeader = '';
 
   public rowToEdit: any = {};
   public rowToAdd: any = {};
@@ -298,11 +316,13 @@ export class AppComponent implements OnInit, AfterViewInit {
       // Show New Col Modal with Custom Form
       // alert("new Column");
       this.onOpenDialog('');
-      this.dialogHeader = "New Column";
+      this.dialogHeader = 'New Column';
       this.showForm = 1;
       this.columnOp = 1;
       this.columnPropsModel = {
-        field: `field-${new Date().getTime()}-${Math.floor(Math.random() * 1000000) + 0}`,
+        field: `field${new Date().getTime()}${
+          Math.floor(Math.random() * 1000000) + 0
+        }`,
         headerText: '',
         dataType: '',
         minWidth: '',
@@ -315,25 +335,37 @@ export class AppComponent implements OnInit, AfterViewInit {
       };
     } else if (args.item.id === 'editCol') {
       // Show Edit Col Modal with Custom Form
-      this.onOpenDialog('');
-      this.columnPropsModel = args.column;
-      this.showForm = 1;
-      this.dialogHeader = "Edit Column";
-      this.columnOp = 2;
+      this.editColumn(args);
     } else if (args.item.id == 'delCol') {
       // Show Del Col Modal with Custom Form
+      console.log('args => ', args);
+      const index = args.column.index;
+      this.data.forEach((e) => {
+        delete e[this.columns[index].field];
+      });
+      this.columns.splice(index, 1);
+      this.refreshRows(this.data);
+      console.log(this.data[0]);
       alert('del Column');
     } else if (args.item.id == 'junaid') {
       // Show Del Col Modal with Custom Form
       alert('junaid');
     } else if (args.item.id == 'insert-row') {
       this.showForm = 2;
-      this.dialogHeader = "New Row";
+      this.dialogHeader = 'New Row';
       this.onOpenDialog('');
       this.rowOp = 1;
     }
   }
 
+  editColumn(args: any) {
+    this.onOpenDialog('');
+      debugger
+      this.columnPropsModel = {...this.columns[args.column.index]};
+      this.showForm = 1;
+      this.dialogHeader = 'Edit Column';
+      this.columnOp = 2;
+  }
   contextMenuOpen(args: any): void {
     console.log('Opening Context Menu Modal Triggered');
   }
